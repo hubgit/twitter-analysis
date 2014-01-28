@@ -1,0 +1,83 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Twitter Analysis</title>
+
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="chart.css">
+<link rel="stylesheet" href="index.css">
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="chart.js"></script>
+
+<h2>Generate a query</h2>
+
+<iframe src="http://boundingbox.klokantech.com/"></iframe>
+
+<p>Select a bounding box. Choose CSV output. Copy and paste the CSV value into the form below.</p>
+
+<form id="query">
+	<label>Locations to include
+		<input name="locations" placeholder="Bounding box coordinates to track" value="-0.351,51.384,0.148,51.672">
+	</label>
+
+	<label>Terms to track
+		<input name="track" placeholder="Comma-separated terms to match" value="rainy,raining,rain,☂,☔,🌂,雨">
+	</label>
+
+	<label>Language
+		<select name="language">
+			<option value="" selected>All</option>
+			<option value="en">English</option>
+		</select>
+	</label>
+
+	<h3>Generated query</h3>
+	<output for="query"></output>
+</form>
+
+<script>
+	$('#query').on('input change', function(event) {
+		var query = $(this).serialize();
+		$('output[for=query]').val(query);
+	}).trigger('input');
+</script>
+
+<h2>Fetch tweets</h2>
+
+<ol>
+	<li><a href="https://dev.twitter.com/apps">Generate a new Twitter app</a>.</li>
+
+	<li>In the "OAuth tool" tab for that app, choose <code>POST</code> as the Request type, enter <code>https://stream.twitter.com/1.1/statuses/filter.json</code> as the Request URI, enter the generated query above as the Request query.</li>
+
+	<li>Run the cURL command that is produced, sending the output to a text file by adding <code>&gt; data/tweets.txt</code> to the end of the command.</li>
+</ol>
+
+<h2>Analyse the tweets</h2>
+
+<form id="reader">
+	<label>Tweets file
+		<input type="file" accept="text/plain">
+	</label>
+</form>
+
+<script>
+$('#reader input').on('change', function(event) {
+    if (this.files.length) {
+        var reader = new FileReader;
+
+        reader.onloadend = function(event) {
+        	chart(event.target.result);
+        }
+
+        reader.readAsText(this.files[0]);
+    }
+});
+</script>
+
+<!-- TODO: better graph -->
+
+<!-- TODO: generate output JSON saving all the configuration data, that can be reloaded here -->
+
+
+
